@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestApp
+namespace TestAppIL
 {
     internal class Program
     {

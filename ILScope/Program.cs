@@ -1,37 +1,22 @@
 ﻿using System;
-using System.Reflection;
-using ILScope.Core;
 using ILScope.Metadata;
 
 namespace ILScope
 {
-    internal class Program
+    class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Console.WriteLine("ILScope - .NET Intermediate Language Disassembler");
-            Console.WriteLine("==============================================");
+            Console.Write("Enter path to .NET assembly (.dll): ");
+            string path = Console.ReadLine();
 
-            Console.Write("Enter path to .NET assembly (.dll) : ");
-            string? path = Console.ReadLine();
-
-            try
+            if (!System.IO.File.Exists(path))
             {
-                // Load Assembly
-                Assembly assembly = AssemblyLoader.LoadAssembly(path!);
-                Console.WriteLine("\n Assembly Loaded Successfully!");
-                Console.WriteLine($"Name  : {assembly.FullName}");
-                Console.WriteLine($"Location: {assembly.Location}");
-
-                //Metadata Exploration
-                MetadataExplorer.PrintTypesAndMethods(assembly);
-
-
+                Console.WriteLine("File not found.");
+                return;
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
+
+            MetadataExplorer.Explore(path);
         }
     }
 }

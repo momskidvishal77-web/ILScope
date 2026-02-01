@@ -1,34 +1,41 @@
 ﻿using System;
-using System.Reflection;
-
+using System.IO;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
+using ILScope.IL;
 
 namespace ILScope.Metadata
 {
-    internal class MetadataExplorer
+    public static class MetadataExplorer
     {
-        public static void PrintTypesAndMethods(Assembly assembly)
+        public static void Explore(string path)
         {
-            Console.WriteLine("\n====METADATA =======\n");
+            using var stream = File.OpenRead(path);
+            using var peReader = new PEReader(stream);
 
-            foreach (Type type in assembly.GetTypes())
+            if (!peReader.HasMetadata)
             {
-                Console.WriteLine($".class {type.FullName}");
-
-                MethodInfo[] methods = type.GetMethods(
-                    BindingFlags.Public | BindingFlags.NonPublic |
-                    BindingFlags.Instance |
-                    BindingFlags.Static |
-                    BindingFlags.DeclaredOnly);
-
-                foreach (MethodInfo method in methods)
-                {
-                    Console.WriteLine($".method {method.ReturnType.Name} {method.Name}()");
-                }
-
-                Console.WriteLine();
-
+                Console.WriteLine("No metadata found.");
+                return;
             }
 
+            MetadataReader metadataReader = peReader.GetMetadataReader();
+
+            Console.WriteLine("\n===== METADATA =====");
+
+            foreach (var typeHandle in metadataReader.TypeDefinitions)
+            {
+                var typeDef = metadataReader.GetTypeDefinition(typeHandle);
+                string typeName = metadataReader.GetString(typeDef.Name);
+                string typeNamespace = metadataReader.GetString(typeDef.Namespace);
+
+                Console.WriteLine($"\n.class {typeNamespace}.{typeName}");
+
+                foreach (var methodHandle in typeDef.GetMethods())
+                {
+                    ILReader.ReadMethodIL(metadataReader, peReader, methodHandle);
+                }
+            }
         }
     }
 }
