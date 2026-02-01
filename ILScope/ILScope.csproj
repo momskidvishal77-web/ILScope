@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Metadata\" />
     <Folder Include="IL\" />
     <Folder Include="Utils\" />
   </ItemGroup>

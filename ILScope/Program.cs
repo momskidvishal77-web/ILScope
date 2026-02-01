@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using ILScope.Core;
+using ILScope.Metadata;
 
 namespace ILScope
 {
@@ -16,10 +17,15 @@ namespace ILScope
 
             try
             {
+                // Load Assembly
                 Assembly assembly = AssemblyLoader.LoadAssembly(path!);
                 Console.WriteLine("\n Assembly Loaded Successfully!");
                 Console.WriteLine($"Name  : {assembly.FullName}");
                 Console.WriteLine($"Location: {assembly.Location}");
+
+                //Metadata Exploration
+                MetadataExplorer.PrintTypesAndMethods(assembly);
+
 
             }
             catch (Exception ex)
